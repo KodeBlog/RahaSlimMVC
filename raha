@@ -1,0 +1,81 @@
+#!/usr/bin/env php
+
+<?php
+/*
+ * RahaSlim MVC mini framework Command Line Utility
+ *
+ * @author:     Rodrick Kazembe <kazemberodrick@yahoo.com>
+ * @copyright:  2015 Rodrick Kazembe
+ * @version:    1.3
+ * @package:    SlimController
+ * @license:    Dont Be A Dick (DBAD)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+
+/**
+ * Include the utility class that will be used by raha Comman Line Utility
+ */
+require './rahamvchelper.php';
+
+/**
+ * @var instance variable of RahaMVC
+ */
+$raha = new RahaMVCHelper();
+
+/**
+ * Display RahaSlim MVC mini framework version
+ *
+ * @param string command line third argument
+ * 
+ */
+if ($_SERVER["argc"] == 2 && $_SERVER["argv"][1] == 'version') {
+    echo $raha->getVersion();
+    exit();
+}
+
+/**
+ * Display RahaSlim MVC mini framework help
+ *
+ * @param string command line third argument
+ * 
+ */
+if ($_SERVER["argc"] == 2 && $_SERVER["argv"][1] == 'help') {
+    echo $raha->getHelp();
+    exit();
+}
+
+/**
+ * Creates the files and directories for RahaSlim MVC mini framework
+ *
+ * @param string command line third argument
+ * 
+ */
+if ($_SERVER["argc"] == 2 && $_SERVER["argv"][1] == 'config') {
+    echo $raha->setRahaMVCStructure();
+    exit();
+}
+
+/**
+ * Creates either a controller or model file with boiler plate code
+ *
+ * @param string command line third argument determines the action
+ * @param string command line fourth argument determines either the controller or model name
+ * 
+ */
+if ($_SERVER["argc"] == 3) {
+    $action = $_SERVER["argv"][1];
+    $name = $_SERVER["argv"][2];
+    if ($action == 'controller') {
+        echo $raha->createController($name);
+    } else if ($action == 'model') {
+        echo $raha->createModel($name);
+    } else {
+        echo "\nInvalid second parameter. Please use either controller or model\n\n";
+    }
+} else {
+    echo "You entered an invalid command. The following are the valid commands\n";
+    echo $raha->gethelp();
+}

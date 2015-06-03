@@ -1,0 +1,14 @@
+{
+    "require": {
+        "slim/slim": "2.*",
+        "slim/extras": "*",
+        "illuminate/database": "*",
+        "twig/twig": "*",
+        "slimcontroller/slimcontroller": "0.4.3"
+    },
+    "autoload": {
+        "psr-0": {
+            "MyApp": "app/"
+        }
+    }
+}
