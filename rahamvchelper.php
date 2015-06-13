@@ -355,9 +355,10 @@ class home extends \SlimController\SlimController {
 
         $model_template = "<?php
 
-namespace $namespace\Models;
+namespace MyApp\Models;
 
 use Illuminate\Database\Eloquent\Model as Model;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class BaseModel extends Model {
 
@@ -367,6 +368,58 @@ class BaseModel extends Model {
 
     public function userInput(\$data) {
         \$this->data = \$data;
+    }
+
+    protected function cleanInput(\$input) {
+
+        \$search = array(
+            '@<script[^>]*?>.*?</script>@si', // Strip out javascript
+            '@<[\/\!]*?[^<>]*?>@si', // Strip out HTML tags
+            '@<style[^>]*?>.*?</style>@siU', // Strip style tags properly
+            '@<![\s\S]*?--[ \t\n\r]*>@'         // Strip multi-line comments
+        );
+
+        \$output = preg_replace(\$search, '', \$input);
+        return \$output;
+    }
+
+    protected function sanitize(\$input) {
+        if (is_array(\$input)) {
+            foreach (\$input as \$var => \$val) {
+                \$output[\$var] = sanitize(\$val);
+            }
+        } else {
+            if (get_magic_quotes_gpc()) {
+                \$input = stripslashes(\$input);
+            }
+            \$input = \$this->cleanInput(\$input);
+            \$output = mysql_real_escape_string(\$input);
+        }
+        return \$output;
+    }
+
+    public static function executeSelectQuery(\$sql_stmt) {
+        \$db = Capsule::connection();
+        \$result = \$db->select(\$db->raw(\$sql_stmt));
+        return \$result;
+    }
+
+    public static function executeDeleteQuery(\$sql_stmt) {
+        \$db = Capsule::connection();
+        \$result = \$db->delete(\$db->raw(\$sql_stmt));
+        return \$result;
+    }
+
+    public static function executeInsertQuery(\$sql_stmt) {
+        \$db = Capsule::connection();
+        \$result = \$db->insert(\$db->raw(\$sql_stmt));
+        return \$result;
+    }
+
+    public static function executeUpdateQuery(\$sql_stmt) {
+        \$db = Capsule::connection();
+        \$result = \$db->update(\$db->raw(\$sql_stmt));
+        return \$result;
     }
 
     public function save(array \$options = array()) {
@@ -381,7 +434,9 @@ class BaseModel extends Model {
 
         parent::save();
     }
-}";
+
+}
+";
 
         fwrite($my_model, $model_template);
 
