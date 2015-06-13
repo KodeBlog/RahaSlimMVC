@@ -261,6 +261,8 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 	'prefix'    => ''
 ));
 
+\$capsule->setAsGlobal();
+
 \$capsule->bootEloquent();";
 
         fwrite($my_database, $config_template);
